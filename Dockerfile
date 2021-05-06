@@ -10,6 +10,7 @@ COPY src/main/resources/db/migration/V1__create_table.sql  /opt/flyway/migration
 RUN pwd
 RUN ls -ltR build/libs
 RUN ls -ltR /var/lib/docker/tmp/docker-builder476886257/
-COPY build/libs/hello-forge-springboot-0.0.1-SNAPSHOT.jar /opt/
+USER root
+COPY /home/gradle/src/build/libs/hello-forge-springboot-0.0.1-SNAPSHOT.jar /opt/
 WORKDIR /opt
 CMD ["java", "-jar", "app.jar"]
