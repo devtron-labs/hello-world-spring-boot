@@ -1,16 +1,14 @@
-FROM openjdk:8-jdk-slim as runtime
-MAINTAINER Datawire <dev@datawire.io>
-LABEL PROJECT_REPO_URL         = "git@github.com:datawire/???.git" \
-      PROJECT_REPO_BROWSER_URL = "https://github.com/datawire/???" \
-      DESCRIPTION              = "Datawire Labs - Hello Spring Boot!" \
-      VENDOR                   = "Datawire, Inc." \
-      VENDOR_URL               = "https://datawire.io"
-
-ENV TERM=dumb
-
-WORKDIR /srv
-COPY    . .
-RUN     ./gradlew test build
-
-ENTRYPOINT ["java"]
-CMD ["-jar", "build/libs/hello-forge-springboot-0.0.1-SNAPSHOT.jar"]
+FROM openjdk:8-jdk-slim
+ENV PORT 8080
+EXPOSE 8080
+RUN mkdir -p /opt/flyway/migrations
+FROM gradle:jdk10 as builder
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle clean build
+COPY src/main/resources/db/migration/V1__create_table.sql  /opt/flyway/migrations/
+RUN pwd
+RUN ls -ltR
+COPY build/libs/*.jar /opt/
+WORKDIR /opt
+CMD ["java", "-jar", "app.jar"]
