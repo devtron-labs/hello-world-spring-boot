@@ -6,6 +6,8 @@ FROM gradle:jdk10 as builder
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle clean build
+USER root
+COPY build/libs/hello-forge-springboot-0.0.1-SNAPSHOT.jar /opt/
 COPY src/main/resources/db/migration/V1__create_table.sql  /opt/flyway/migrations/
 RUN pwd
 RUN ls -ltR build/libs
